@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d78446f5f3021421e8e85a4b1467390d
+labels:
+- ambience
+- audio
+AudioImporter:
+  serializedVersion: 4
+  format: -1
+  quality: .5
+  stream: 1
+  3D: 0
+  forceToMono: 0
+  useHardware: 0
+  loopable: 0
+  userData: 
