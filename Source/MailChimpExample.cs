@@ -71,18 +71,20 @@ public class MailChimpExample : MonoBehaviour
 		/// <param name="responseText">Web Response Payload.</param>
 		public void MailChimpCallback (int hash, Hashtable responseHeaders, string responseText)
 		{
-				// Display the hash of our call
-				_response = "CALL HASH: " + hash + "\n\r\n\r";
+				// Make sure that our hash is displayed for verification purposes.
+				_response = "CALL-HASH: " + hash + "\n\n";
 
-				// Show the calls response headers
-				var headers = "HEADERS\n\r========\n\r\n\r";
+				// Let's also show the headers that came across in the response as they are very handy for figuring out if something is wrong.
+				var headers = "HEADERS\n========\n\n";
 				foreach (var s in responseHeaders.Keys) {
 						headers += s + ": " + responseHeaders [s] + "\n\r";
 				}
+
+				// Append that header text to our response text
 				_response += headers;
 
-				// Actual payload of return
-				_response += "\n\rRESPONSE TEXT: \n\r==============\n\r" + responseText;
+				// Add the actual response payload (if there is one)
+				_response += "\n\rRESPONSE-TEXT: \n\r==============\n\r" + responseText;
 		}
 
 		/// <summary>
@@ -109,6 +111,9 @@ public class MailChimpExample : MonoBehaviour
 								"{\"email\":\"" + _emailAddress + "\"}"));
 
 						// Send POST to the WebPool, telling it to callback to MailChimpCallback when finished.
+						// There is a small hickup todo with "order" here, you need to have either a WebPool or 
+						// ObjectPool component already in the scene and initialized by the point that you call this
+						// due to the startup sequence of the ObjectPool
 						hWebPool.Instance.POST (
 								"https://" + _apiRegion + ".api.mailchimp.com/2.0/lists/subscribe.json",
 								"application/json",
