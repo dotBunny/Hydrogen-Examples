@@ -113,6 +113,7 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 1cea3da5f065b4219b344a5d5867a56d, type: 3}
   - Priority: 128
     Clip: {fileID: 8300000, guid: d78446f5f3021421e8e85a4b1467390d, type: 3}
+  buttonClick: {fileID: 8300000, guid: 2caf68878d57d46e99b0d586a49f9d4c, type: 3}
 --- !u!81 &478832882
 AudioListener:
   m_ObjectHideFlags: 0
@@ -185,7 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4416508e3b934417e8d5d658cfbf66b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinimumSources: 1
   MaximumSources: 1
+  MinimumSources: 1
   UsePriorities: 1
-  Presistant: 1
+  Persistent: 1
