@@ -82,6 +82,7 @@ public class MeshCombinerExample : MonoBehaviour
 						meshObject.transform.position = Vector3.zero;
 						meshObject.transform.rotation = Quaternion.identity;
 						meshObject.AddComponent<MeshFilter> ().mesh = meshes [y];
+						//TODO: Assign Material? Based on ?
 						//meshObject.AddComponent<MeshRenderer> ().material = defaultMaterial;
 				}
 
