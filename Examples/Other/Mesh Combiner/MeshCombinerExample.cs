@@ -25,25 +25,31 @@ public class MeshCombinerExample : MonoBehaviour
 
 				// Yes We Hate This - There Are Better Implementations
 				MeshFilter[] meshFilters = TargetMeshes.GetComponentsInChildren<MeshFilter> ();
-				yield return new WaitForEndOfFrame ();
 
-				// have static function taht determines if its on a different material ... loops one material at a time
-				// Our data array
-				var meshes = new Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[meshFilters.Length];
+				// Need to leave this one in as a weird access race happens if you dont.
+				yield return new WaitForEndOfFrame ();
 
 				// Loop through all of our mesh filters and add them to the combiner to be combined.
 				for (int x = 0; x < meshFilters.Length; x++) {
 
 						if (meshFilters [x].gameObject.activeSelf) {
+						
+								// Can't touch materials in other threads either
+								foreach (Material m in  meshFilters[x].renderer.materials) {
 
-								_meshCombiner.AddMesh (meshFilters [x].mesh, meshFilters [x].transform);
+										_meshCombiner.AddMaterial (m);
+								}
+								_meshCombiner.AddMesh (meshFilters [x].mesh, meshFilters [x].renderer.materials, meshFilters [x].transform);
 						}
 						meshFilters [x].gameObject.SetActive (false);
-						yield return new WaitForEndOfFrame ();
+
+						// NOTE: This is what slows it down, but allows you to see the disassembly currently.
+						//yield return new WaitForEndOfFrame ();
 				}
 
 				// Start the threaded love
-				_meshCombiner.Combine (System.Threading.ThreadPriority.Normal, null, ThreadCallback);
+				_meshCombiner.Combine (ThreadCallback);
+				yield return new WaitForEndOfFrame ();
 		}
 
 		/// <summary>
@@ -54,40 +60,30 @@ public class MeshCombinerExample : MonoBehaviour
 		/// <param name="materials">Materials.</param>
 		public IEnumerator PostProcess (int hash, 
 		                                Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[] meshDescriptions, 
-		                                Material[] materials)
+		                                Dictionary<int, Material> materials)
 		{
-				// Create our dummy list of meshes
-				var meshes = new List<Mesh> ();
+				var go = new GameObject ("Combined Meshes");
+				go.transform.position = TargetMeshes.position;
+				go.transform.rotation = TargetMeshes.rotation;
 
-
-				for (int x = 0; x <= meshDescriptions.Length; x++) {
+				// Make our meshes in Unity
+				for (int x = 0; x < meshDescriptions.Length; x++) {
+						var meshObject = new GameObject ();
 						var newMesh = Hydrogen.Threading.Jobs.MeshCombiner.CreateMesh (meshDescriptions [x]);
 
-						// Add to list
-						meshes.Add (newMesh);
+						meshObject.name = hash + "_" + newMesh.name;
+						meshObject.transform.parent = go.transform;
+						meshObject.transform.position = Vector3.zero;
+						meshObject.transform.rotation = Quaternion.identity;
+						meshObject.AddComponent<MeshFilter> ().mesh = newMesh;
+
+						meshObject.AddComponent<MeshRenderer> ().material = materials [meshDescriptions [x].SubMeshes [0].SharedMaterial];
 
 						// Fake Unity Threading
 						yield return new WaitForEndOfFrame ();
 				}
 
-				var go = new GameObject ("Combined Meshes");
-				go.transform.position = TargetMeshes.position;
-				go.transform.rotation = TargetMeshes.rotation;
-
-				// Show Them
-				for (int y = 0; y <= meshes.Count; y++) {
-						var meshObject = new GameObject ();
-						meshObject.name = hash + "_" + meshes [y].name;
-						meshObject.transform.parent = go.transform;
-						meshObject.transform.position = Vector3.zero;
-						meshObject.transform.rotation = Quaternion.identity;
-						meshObject.AddComponent<MeshFilter> ().mesh = meshes [y];
-						//TODO: Assign Material? Based on ?
-						//meshObject.AddComponent<MeshRenderer> ().material = defaultMaterial;
-				}
-
-				// Destroy the mesh combiner (forcing data wipe);
-				yield return new WaitForEndOfFrame ();
+				// Destroy the mesh combiner (forcing data wipe);	
 				_meshCombiner = null;
 		}
 
@@ -99,7 +95,7 @@ public class MeshCombinerExample : MonoBehaviour
 		/// <param name="hash">Instance Hash.</param>
 		/// <param name="meshDescriptions">MeshDescriptions.</param>
 		/// <param name="materials">Materials.</param>
-		public void ThreadCallback (int hash, Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[] meshDescriptions, Material[] materials)
+		public void ThreadCallback (int hash, Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[] meshDescriptions, Dictionary<int, Material> materials)
 		{
 				// This is just a dirty way to see if we can squeeze jsut a bit more performance out of Unity when 
 				// making all of the meshes for us (instead of it being done in one call, we use a coroutine with a loop.

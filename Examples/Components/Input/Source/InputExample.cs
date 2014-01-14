@@ -6,7 +6,7 @@
 //       Matthew Davey <matthew.davey@dotbunny.com>
 //       Robin Southern <betajaen@ihoed.com>
 //
-// Copyright (c) 2013 dotBunny Inc. (http://www.dotbunny.com)
+// Copyright (c) 2014 dotBunny Inc. (http://www.dotbunny.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ public class InputExample : MonoBehaviour
 
 				// Remap our controls by deserializing our controls and passing that data to the Input Manager
 				if (GUI.Button (new Rect (330, 10, 150, 30), "Set Controls")) {
-						hInput.Instance.SetControls (Hydrogen.Serialization.INI.Deserialize (_fileHolder));
+						hInput.Instance.SetControls (Hydrogen.Serialization.INI.Deserialize (_fileHolder, '='));
 				}
 
 				GUI.color = Color.black;
