@@ -41,11 +41,14 @@ public class MeshCombinerExample : MonoBehaviour
 								}
 								_meshCombiner.AddMesh (meshFilters [x].mesh, meshFilters [x].renderer.materials, meshFilters [x].transform);
 						}
+
 						meshFilters [x].gameObject.SetActive (false);
 
 						// NOTE: This is what slows it down, but allows you to see the disassembly currently.
 						//yield return new WaitForEndOfFrame ();
 				}
+
+				Debug.Log ("Found " + _meshCombiner.MaterialsLookup.Count + " Materials");
 
 				// Start the threaded love
 				_meshCombiner.Combine (ThreadCallback);
