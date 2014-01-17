@@ -33,13 +33,8 @@ public class MeshCombinerExample : MonoBehaviour
 				for (int x = 0; x < meshFilters.Length; x++) {
 
 						if (meshFilters [x].gameObject.activeSelf) {
-						
-								// Can't touch materials in other threads either
-								foreach (Material m in  meshFilters[x].renderer.materials) {
+								_meshCombiner.AddMesh (meshFilters [x], meshFilters [x].renderer, meshFilters [x].transform);
 
-										_meshCombiner.AddMaterial (m);
-								}
-								_meshCombiner.AddMesh (meshFilters [x].mesh, meshFilters [x].renderer.materials, meshFilters [x].transform);
 						}
 
 						meshFilters [x].gameObject.SetActive (false);
@@ -47,8 +42,6 @@ public class MeshCombinerExample : MonoBehaviour
 						// NOTE: This is what slows it down, but allows you to see the disassembly currently.
 						//yield return new WaitForEndOfFrame ();
 				}
-
-				Debug.Log ("Found " + _meshCombiner.MaterialsLookup.Count + " Materials");
 
 				// Start the threaded love
 				_meshCombiner.Combine (ThreadCallback);
@@ -61,26 +54,24 @@ public class MeshCombinerExample : MonoBehaviour
 		/// <param name="hash">Instance Hash.</param>
 		/// <param name="meshDescriptions">MeshDescriptions.</param>
 		/// <param name="materials">Materials.</param>
-		public IEnumerator PostProcess (int hash, 
-		                                Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[] meshDescriptions, 
-		                                Dictionary<int, Material> materials)
+		public IEnumerator PostProcess (int hash, Hydrogen.Threading.Jobs.MeshCombiner.MeshOutput[] meshOutputs)
 		{
 				var go = new GameObject ("Combined Meshes");
 				go.transform.position = TargetMeshes.position;
 				go.transform.rotation = TargetMeshes.rotation;
 
 				// Make our meshes in Unity
-				for (int x = 0; x < meshDescriptions.Length; x++) {
+				for (int x = 0; x < meshOutputs.Length; x++) {
 						var meshObject = new GameObject ();
-						var newMesh = Hydrogen.Threading.Jobs.MeshCombiner.CreateMesh (meshDescriptions [x]);
 
-						meshObject.name = hash + "_" + newMesh.name;
+						var newMesh = _meshCombiner.CreateMeshObject (meshOutputs [x]);
+
+						meshObject.name = hash + "_" + newMesh.Mesh.name;
 						meshObject.transform.parent = go.transform;
 						meshObject.transform.position = Vector3.zero;
 						meshObject.transform.rotation = Quaternion.identity;
-						meshObject.AddComponent<MeshFilter> ().mesh = newMesh;
-
-						meshObject.AddComponent<MeshRenderer> ().material = materials [meshDescriptions [x].SubMeshes [0].SharedMaterial];
+						meshObject.AddComponent<MeshFilter> ().sharedMesh = newMesh.Mesh;
+						meshObject.AddComponent<MeshRenderer> ().sharedMaterials = newMesh.Materials;
 
 						// Fake Unity Threading
 						yield return new WaitForEndOfFrame ();
@@ -96,13 +87,12 @@ public class MeshCombinerExample : MonoBehaviour
 		/// create or touch Unity based meshes outside of the main thread.
 		/// </summary>
 		/// <param name="hash">Instance Hash.</param>
-		/// <param name="meshDescriptions">MeshDescriptions.</param>
-		/// <param name="materials">Materials.</param>
-		public void ThreadCallback (int hash, Hydrogen.Threading.Jobs.MeshCombiner.MeshDescription[] meshDescriptions, Dictionary<int, Material> materials)
+		/// <param name="meshOutputs">.</param>
+		public void ThreadCallback (int hash, Hydrogen.Threading.Jobs.MeshCombiner.MeshOutput[] meshOutputs)
 		{
 				// This is just a dirty way to see if we can squeeze jsut a bit more performance out of Unity when 
 				// making all of the meshes for us (instead of it being done in one call, we use a coroutine with a loop.
-				StartCoroutine (PostProcess (hash, meshDescriptions, materials));
+				StartCoroutine (PostProcess (hash, meshOutputs));
 		}
 
 		/// <summary>
