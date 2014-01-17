@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class MeshCombinerExample : MonoBehaviour
 {
-		Hydrogen.Threading.Jobs.MeshCombiner _meshCombiner;
+		Hydrogen.Threading.Jobs.MeshCombiner _meshCombiner = new Hydrogen.Threading.Jobs.MeshCombiner ();
 		public Transform TargetMeshes;
 
 		/// <summary>
@@ -30,6 +30,7 @@ public class MeshCombinerExample : MonoBehaviour
 				yield return new WaitForEndOfFrame ();
 
 				// Loop through all of our mesh filters and add them to the combiner to be combined.
+
 				for (int x = 0; x < meshFilters.Length; x++) {
 
 						if (meshFilters [x].gameObject.activeSelf) {
@@ -43,8 +44,11 @@ public class MeshCombinerExample : MonoBehaviour
 						//yield return new WaitForEndOfFrame ();
 				}
 
+
 				// Start the threaded love
-				_meshCombiner.Combine (ThreadCallback);
+				if (_meshCombiner.MeshInputCount > 0) {
+						_meshCombiner.Combine (ThreadCallback);
+				}
 				yield return new WaitForEndOfFrame ();
 		}
 
@@ -77,8 +81,10 @@ public class MeshCombinerExample : MonoBehaviour
 						yield return new WaitForEndOfFrame ();
 				}
 
-				// Destroy the mesh combiner (forcing data wipe);	
-				_meshCombiner = null;
+				// Clear previous data (for demonstration purposes)
+				// It could be useful to keep some mesh data in already parsed, then you could use the RemoveMesh function
+				// to remove ones that you want changed, without having to reparse mesh data.
+				_meshCombiner.ClearMeshes ();
 		}
 
 		/// <summary>
@@ -115,7 +121,7 @@ public class MeshCombinerExample : MonoBehaviour
 		{
 				// A clever little trick to only show the button when nothing is going on.
 				// Obviously, in a real world setting this would probably not look like this.
-				if (_meshCombiner == null) {
+				if (_meshCombiner != null && _meshCombiner.MeshInputCount == 0) {
 
 						if (GUI.Button (new Rect (5, 5, 200, 35), "Rock & || Possibly Roll!")) {
 								StartCoroutine (PreProcess ());
