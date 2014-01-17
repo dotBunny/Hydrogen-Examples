@@ -66,7 +66,7 @@ public class MeshCombinerExample : MonoBehaviour
 
 						var newMesh = _meshCombiner.CreateMeshObject (meshOutputs [x]);
 
-						meshObject.name = hash + "_" + newMesh.Mesh.name;
+						meshObject.name = "Mesh_" + hash + "_" + newMesh.GetHashCode ();
 						meshObject.transform.parent = go.transform;
 						meshObject.transform.position = Vector3.zero;
 						meshObject.transform.rotation = Quaternion.identity;

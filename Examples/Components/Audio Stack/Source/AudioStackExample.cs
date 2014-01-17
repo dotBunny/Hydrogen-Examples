@@ -88,8 +88,7 @@ public class AudioStackExample : MonoBehaviour
 								// Add it to the stack
 								hAudioStack.Instance.Add (newItem, false);
 						}
-
-
+								
 
 				}
 
