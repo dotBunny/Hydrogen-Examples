@@ -44,6 +44,11 @@ public class ObjectPoolExample : MonoBehaviour
 		/// </summary>
 		int[] _poolIDs;
 
+		public void Awake ()
+		{
+				hConsole.Instance.Mode = hConsole.DisplayMode.Stats;
+		}
+
 		/// <summary>
 		/// Unity's Start Event.
 		/// </summary>
@@ -51,6 +56,11 @@ public class ObjectPoolExample : MonoBehaviour
 		{
 				// Add all of our prefabs to the Object Pool
 				_poolIDs = hObjectPool.Instance.Add (Prefabs);
+
+				// Turn on tracking for all pools because this example actually creates the object pool at runtime.
+				foreach (var pool in hObjectPool.Instance.ObjectPools) {
+						pool.TrackObjects = true;
+				}
 		}
 
 		/// <summary>
@@ -60,8 +70,10 @@ public class ObjectPoolExample : MonoBehaviour
 		{
 				// Spawn a GameObject (randomly) from the reference array. We could have passed a GameObject instead,
 				// but this method is faster. This will also return a reference to the newly spawned GameObject.
-				hObjectPool.Instance.Spawn (
-						Random.Range (0, _poolIDs.Length),
-						gameObject.transform.position, Random.rotation);
+				int poolID = Random.Range (0, _poolIDs.Length);
+				hObjectPool.Instance.Spawn (poolID, gameObject.transform.position, Random.rotation);
+
+				// Internal watch demonstration through utilizing Hydrogen's developer console.
+				hConsole.Watch ("Pool " + poolID, hObjectPool.Instance.ObjectPools [poolID].SpawnedObjects.Length);
 		}
 }

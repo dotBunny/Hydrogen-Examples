@@ -153,7 +153,7 @@ GameObject:
   - 4: {fileID: 612781751}
   - 114: {fileID: 612781752}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: Spawner_000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,7 +195,7 @@ GameObject:
   - 4: {fileID: 657302160}
   - 114: {fileID: 657302161}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: Spawner_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -408,7 +408,7 @@ GameObject:
   - 4: {fileID: 1740161319}
   - 114: {fileID: 1740161320}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: Spawner_002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -440,3 +440,45 @@ MonoBehaviour:
   - {fileID: 100000, guid: 1cd33e07536224d83aacbf77e94fd338, type: 2}
   - {fileID: 100000, guid: 639d9f251383d4f7eaf94bee50305cc1, type: 2}
   - {fileID: 100000, guid: 34d6d443f5b804cf6abea9596a479c1d, type: 2}
+--- !u!1 &2083444881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 2083444883}
+  - 114: {fileID: 2083444882}
+  m_Layer: 0
+  m_Name: Hydrogen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2083444882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2083444881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414d983de46524724b1f5039bb6fc212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CreateCamera: 1
+  Mode: 1
+  Location: 1
+  ToggleKey: 96
+--- !u!4 &2083444883
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2083444881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
