@@ -42,12 +42,33 @@ public class MeshCombinerExample : MonoBehaviour
 		public GameObject RootObject;
 
 		/// <summary>
+		/// Unity's Awake Event
+		/// </summary>
+		void Awake ()
+		{
+				// Initialize hDebug (cheat) and put it into stats mode.
+				hDebug.Instance.Mode = hDebug.DisplayMode.Stats;
+
+
+		}
+
+		/// <summary>
 		/// Unity's OnGUI Event
 		/// </summary>
 		void OnGUI ()
 		{
-				if (GUI.Button (new Rect (5, 5, 200, 35), "Combine Meshes")) {
+				if (GUI.Button (new Rect ((Screen.width / 2) - 45, (Screen.height / 2) - 15, 90, 30), "Combine")) {
 						hMeshCombiner.Instance.Combine (RootObject, OutputParent, true);
 				}
+		}
+
+		void FixedUpdate ()
+		{
+				// This is expensive (never do this in your game) but necessary to demonstrate the effectiveness.
+				MeshFilter[] before = RootObject.GetComponentsInChildren<MeshFilter> ();
+				MeshFilter[] after = OutputParent.gameObject.GetComponentsInChildren<MeshFilter> ();
+
+				// Update our Meshes watch.
+				hDebug.Watch ("Meshes", before.Length + after.Length);
 		}
 }

@@ -55,10 +55,6 @@ public class MailChimpExample : MonoBehaviour
 		/// </summary>
 		string _apiRegion = "";
 		/// <summary>
-		/// Default Email Address to use in the example.
-		/// </summary>
-		string _emailAddress = "sample@sample.com";
-		/// <summary>
 		/// Simple way of telling if we've submitted something already
 		/// </summary>
 		bool _submitted;
@@ -104,10 +100,7 @@ public class MailChimpExample : MonoBehaviour
 				if (_submitted)
 						return;
 
-				// Display Email Address
-				_emailAddress = GUI.TextField (new Rect (15, Screen.height - 75, 150, 35), _emailAddress);
-
-				if (GUI.Button (new Rect (170, Screen.height - 75, 90, 35), "Subscribe")) {
+				if (GUI.Button (new Rect ((Screen.width / 2) - 45, (Screen.height / 2) - 15, 90, 30), "Subscribe")) {
 
 						// Show us the console so we can see some messages.
 						hDebug.Instance.Mode = hDebug.DisplayMode.Console;
@@ -126,7 +119,7 @@ public class MailChimpExample : MonoBehaviour
 
 						// Lazy example for a sub JSONObject; you can create JSON objects from JSON.
 						jsonPayload.Fields.Add ("email", new Hydrogen.Serialization.JSONObject (
-								"{\"email\":\"" + _emailAddress + "\"}"));
+								"{\"email\":\"sample@sample.com\"}"));
 
 						// Send POST to the WebPool, telling it to callback to MailChimpCallback when finished.
 						// There is a small hickup todo with "order" here, you need to have either a WebPool or 
