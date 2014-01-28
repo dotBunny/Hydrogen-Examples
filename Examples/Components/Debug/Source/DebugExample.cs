@@ -75,8 +75,13 @@ public class DebugExample : MonoBehaviour
 		/// </summary>
 		void Update ()
 		{
+
 				// Our message to show in the middle of the screen
 				string message = "Press Tilde (~) To Cycle Modes. [" + hDebug.Instance.Mode + "]";
+
+				if (Input.GetKeyDown (hDebug.Instance.ToggleKey)) {
+						hDebug.Log ("Toggle Button Pressed - Switching Modes");
+				}
 
 				// Print to the screen ...
 				hDebug.Print (
