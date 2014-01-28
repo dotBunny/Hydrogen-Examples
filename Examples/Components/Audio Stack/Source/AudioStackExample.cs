@@ -46,9 +46,22 @@ public class AudioStackExample : MonoBehaviour
 		/// </summary>
 		public AudioClip buttonClick;
 
+		public void Awake ()
+		{
+				// Dirty initialize our debugger
+				hDebug.Instance.Mode = hDebug.DisplayMode.Stats;
+
+				// Dirty way of putting an Audio Stack into the scene, but fun none the less. You really can add the 
+				// components manually in the scene's heirarchy, and that should be the preferred method.
+				hAudioStack.Instance.UsePriorities = true;
+		}
+
 		public void OnGUI ()
 		{
-				if (GUI.Button (new Rect (5, 5, 175, 35), "Play (No Dups)")) {
+				int verticalSpacing = (Screen.height / 2);
+				int horizontalSpacing = (Screen.width / 2) - 80;
+
+				if (GUI.Button (new Rect (horizontalSpacing, verticalSpacing - 70, 160, 30), "Play (No Dups)")) {
 						hAudioStack.Instance.Add (
 								new Hydrogen.Core.AudioStackItem (
 										clips [Random.Range (0, clips.Length)].Clip));
@@ -56,14 +69,14 @@ public class AudioStackExample : MonoBehaviour
 
 				// Play a clip through the stack allowing for duplicates to be added.
 				// This will create unique keys based on some settings.
-				if (GUI.Button (new Rect (185, 5, 175, 35), "Play (Yes Dups)")) {
+				if (GUI.Button (new Rect (horizontalSpacing, verticalSpacing - 35, 160, 30), "Play (Yes Dups)")) {
 						hAudioStack.Instance.Add (
 								new Hydrogen.Core.AudioStackItem (
 										clips [Random.Range (0, clips.Length)].Clip), true);
 				}
 
 				// Play a clip through the stack overriding lower priority clips as needed.
-				if (GUI.Button (new Rect (365, 5, 175, 35), "Play (Use Priorities)")) {
+				if (GUI.Button (new Rect (horizontalSpacing, verticalSpacing, 160, 30), "Play (Use Priorities)")) {
 
 						var randomID = Random.Range (0, clips.Length);
 
@@ -75,7 +88,7 @@ public class AudioStackExample : MonoBehaviour
 				}
 
 
-				if (GUI.Button (new Rect (545, 5, 100, 35), "Button")) {
+				if (GUI.Button (new Rect (horizontalSpacing, verticalSpacing + 35, 160, 30), "Instant")) {
 
 						// Check if the button sound is loaded using its name as the key, if so, we want to restart it!
 						if (hAudioStack.Instance.IsLoaded (buttonClick)) {
@@ -88,12 +101,9 @@ public class AudioStackExample : MonoBehaviour
 								// Add it to the stack
 								hAudioStack.Instance.Add (newItem, false);
 						}
-								
-
 				}
 
 				// Some debug output to see how many sources are actually active.
-				GUI.color = Color.black;
-				GUI.Label (new Rect (10, 50, 100, 35), "Active Sources: " + hAudioStack.Instance.SourcesCount);
+				hDebug.Watch ("Active Sources", hAudioStack.Instance.SourcesCount);
 		}
 }
