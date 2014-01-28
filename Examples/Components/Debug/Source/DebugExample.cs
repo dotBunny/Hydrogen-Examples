@@ -1,6 +1,6 @@
-#region Copyright Notice & License Information
+﻿#region Copyright Notice & License Information
 //
-// ObjectPoolExample.cs
+// DebugExample.cs
 //
 // Author:
 //       Matthew Davey <matthew.davey@dotbunny.com>
@@ -29,52 +29,65 @@
 using UnityEngine;
 
 /// <summary>
-/// An example of how to use the Object Pool in a quick drop in manner. There are many ways to use the object pool
-/// some more effiencient then others.
+/// An example of how to use the hDebug component used throughout Hydrogen.
 /// </summary>
 [AddComponentMenu ("")]
-public class ObjectPoolExample : MonoBehaviour
+public class DebugExample : MonoBehaviour
 {
 		/// <summary>
-		/// Prefab array to use with the spawner.
+		/// An internal demonstration counter.
 		/// </summary>
-		public GameObject[] Prefabs;
-		/// <summary>
-		/// An internal reference to keep track of relevant pool IDs.
-		/// </summary>
-		int[] _poolIDs;
+		int _counter;
 
-		public void Awake ()
+		/// <summary>
+		/// Unity's Awake Event.
+		/// </summary>
+		void Awake ()
 		{
-				// A nice little trick to make our console available and put it into stats mode right off the start.
+				// There is many ways to initialize the debug system, however this is the simplest.
+				hDebug.Initialize ();
+
+				// Turn on Stats mode
 				hDebug.Instance.Mode = hDebug.DisplayMode.Stats;
 		}
 
 		/// <summary>
 		/// Unity's Start Event.
 		/// </summary>
-		public void Start ()
+		void Start ()
 		{
-				// Add all of our prefabs to the Object Pool
-				_poolIDs = hObjectPool.Instance.Add (Prefabs);
+				hDebug.Log (gameObject.name + "'s Start Function Was Called");
+				hDebug.Warn ("This is a warning message.");
+				hDebug.EchoToUnityLog = false;
+				hDebug.Error ("While this is an error message. This won't show up in Unity's log as we've turned off that feature.");
 
-				// Turn on tracking for all pools because this example actually creates the object pool at runtime.
-				foreach (var pool in hObjectPool.Instance.ObjectPools) {
-						pool.TrackObjects = true;
-				}
+				// Turn it back on to prove we dont double up messages
+				hDebug.EchoToUnityLog = true;
+
+				// These will still show up in the Unity log
+				Debug.Log ("You don't have to call hDebug to populate its messages.");
+				Debug.LogWarning ("It handles all the basics for you.");
+
 		}
 
 		/// <summary>
 		/// Unity's Update Event.
 		/// </summary>
-		public void Update ()
+		void Update ()
 		{
-				// Spawn a GameObject (randomly) from the reference array. We could have passed a GameObject instead,
-				// but this method is faster. This will also return a reference to the newly spawned GameObject.
-				int poolID = Random.Range (0, _poolIDs.Length);
-				hObjectPool.Instance.Spawn (poolID, gameObject.transform.position, Random.rotation);
+				// Our message to show in the middle of the screen
+				string message = "Press Tilde (~) To Cycle Modes. [" + hDebug.Instance.Mode + "]";
 
-				// Internal watch demonstration through utilizing Hydrogen's developer console.
-				hDebug.Watch (hObjectPool.Instance.ObjectPools [poolID].Prefab.name, hObjectPool.Instance.ObjectPools [poolID].SpawnedObjects.Length);
+				// Print to the screen ...
+				hDebug.Print (
+						(Screen.width / 2) - ((message.Length * hDebug.GlyphWidth) / 2), 
+						((Screen.height / 2) - (hDebug.GlyphHeight / 2)), 
+						Color.gray, message);
+
+				// Increment our counter
+				_counter++;
+
+				// Report its findings
+				hDebug.Watch ("Counter", _counter);
 		}
 }

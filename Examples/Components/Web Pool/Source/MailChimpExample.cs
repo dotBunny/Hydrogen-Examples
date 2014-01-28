@@ -59,9 +59,9 @@ public class MailChimpExample : MonoBehaviour
 		/// </summary>
 		string _emailAddress = "sample@sample.com";
 		/// <summary>
-		/// Storage for on screen displayed textual response.
+		/// Simple way of telling if we've submitted something already
 		/// </summary>
-		string _response = "";
+		bool _submitted;
 
 		/// <summary>
 		/// Callback function, called when WebPoolWorker is finished.
@@ -71,20 +71,28 @@ public class MailChimpExample : MonoBehaviour
 		/// <param name="responseText">Web Response Payload.</param>
 		public void MailChimpCallback (int hash, Hashtable responseHeaders, string responseText)
 		{
-				// Make sure that our hash is displayed for verification purposes.
-				_response = "CALL-HASH: " + hash + "\n\n";
-
+				// Look we got something back, better say something in the console.
+				hDebug.Log ("Return from WebCall (" + hash + ") ... ");
 				// Let's also show the headers that came across in the response as they are very handy for figuring out if something is wrong.
-				var headers = "HEADERS\n========\n\n";
+				var headers = "HEADERS\n========\n";
 				foreach (var s in responseHeaders.Keys) {
-						headers += s + ": " + responseHeaders [s] + "\n\r";
+						headers += s + ": " + responseHeaders [s] + "\n";
 				}
+						
+				// Output our responses
+				hDebug.Log (headers + "\nRESPONSE-TEXT: \n==============\n" + responseText);
+		}
 
-				// Append that header text to our response text
-				_response += headers;
+		/// <summary>
+		/// Unity's Awake Event
+		/// </summary>
+		void Awake ()
+		{
+				// Init and set the debug mode.
+				hDebug.Instance.Mode = hDebug.DisplayMode.Stats;
 
-				// Add the actual response payload (if there is one)
-				_response += "\n\rRESPONSE-TEXT: \n\r==============\n\r" + responseText;
+				// Cheating way to just put the WebPool quickly on the Hydrogen gameObject
+				hDebug.Instance.gameObject.AddComponent<hWebPool> ();
 		}
 
 		/// <summary>
@@ -92,10 +100,20 @@ public class MailChimpExample : MonoBehaviour
 		/// </summary>
 		void OnGUI ()
 		{
-				// Display Email Address
-				_emailAddress = GUI.TextField (new Rect (25, 25, 150, 25), _emailAddress);
+				// Don't want to show the GUI if we've already called.
+				if (_submitted)
+						return;
 
-				if (GUI.Button (new Rect (25, 60, 90, 20), "Subscribe")) {
+				// Display Email Address
+				_emailAddress = GUI.TextField (new Rect (15, Screen.height - 75, 150, 35), _emailAddress);
+
+				if (GUI.Button (new Rect (170, Screen.height - 75, 90, 35), "Subscribe")) {
+
+						// Show us the console so we can see some messages.
+						hDebug.Instance.Mode = hDebug.DisplayMode.Console;
+
+						hDebug.Log ("Making call to MailChimp ...");
+
 						// Create new JSONObject
 						var jsonPayload = new Hydrogen.Serialization.JSONObject ();
 
@@ -120,9 +138,9 @@ public class MailChimpExample : MonoBehaviour
 								jsonPayload.Serialized,
 								null,
 								MailChimpCallback);
-				}
 
-				// Show Response
-				GUI.Label (new Rect (25, 90, 500, 500), _response);
+						// Hide the UI as we have already submitted.
+						_submitted = true;
+				}
 		}
 }
