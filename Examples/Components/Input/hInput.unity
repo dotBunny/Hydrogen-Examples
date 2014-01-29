@@ -184,7 +184,7 @@ GameObject:
   - 54: {fileID: 334090668}
   - 114: {fileID: 334090673}
   m_Layer: 0
-  m_Name: Tank
+  m_Name: Example
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
