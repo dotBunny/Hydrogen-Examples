@@ -66,33 +66,59 @@ public class InputExample : MonoBehaviour
 		/// This matches the order of the Ammo array so its an easily matched reference.
 		/// </summary>
 		int[] _prefabIDs;
+		/// <summary>
+		/// Has the config been saved?
+		/// </summary>
+		bool _saved;
+		/// <summary>
+		/// Do we have controls loaded?
+		/// </summary>
+		bool _haveControls = true;
+
+		/// <summary>
+		/// Unity's Awake Event
+		/// </summary>
+		void Awake ()
+		{
+				// Dirty create our developer system, and get it into stats mode.
+				hDebug.Instance.Mode = hDebug.DisplayMode.Stats;
+		}
 
 		/// <summary>
 		/// Unity's OnGUI Event.
 		/// </summary>
 		void OnGUI ()
 		{
+
 				// If we dont want to display GUI, don't!
 				if (!DisplayGUI)
 						return;
 
+				int verticalSpacing = (Screen.height / 2) - 15;
+				int horizontalSpacing = (Screen.width / 2) - 75;
 				// Serialize the current config, and save it to our fake file
-				if (GUI.Button (new Rect (10, 10, 150, 30), "Save Config")) {
+				if (!_saved && GUI.Button (new Rect (horizontalSpacing - 160, verticalSpacing, 150, 30), "Save Config")) {
+						_saved = true;
 						_fileHolder = Hydrogen.Serialization.INI.Serialize (hInput.Instance.GetControls ());
+						hDebug.Log (_fileHolder);
 				}
 
 				// Clear out all mapped controls from our fancy Input Manager
-				if (GUI.Button (new Rect (170, 10, 150, 30), "Clear Controls")) {
+				if (_saved && GUI.Button (new Rect (horizontalSpacing, verticalSpacing, 150, 30), "Clear Controls")) {
 						hInput.Instance.ClearControls ();
+						_haveControls = false;
+						hDebug.Log ("Cleared Controls");
 				}
 
 				// Remap our controls by deserializing our controls and passing that data to the Input Manager
-				if (GUI.Button (new Rect (330, 10, 150, 30), "Set Controls")) {
+				if (_saved && GUI.Button (new Rect (horizontalSpacing + 160, verticalSpacing, 150, 30), "Set Controls")) {
 						hInput.Instance.SetControls (Hydrogen.Serialization.INI.Deserialize (_fileHolder, '='));
+						_haveControls = true;
+						hDebug.Log ("Set Controls");
 				}
 
-				GUI.color = Color.black;
-				GUI.Label (new Rect (10, 40, 500, 500), "INI Data\n\r" + _fileHolder);
+				hDebug.Watch ("Config Saved", _saved);
+				hDebug.Watch ("Have Controls", _haveControls);
 		}
 
 		/// <summary>
@@ -168,7 +194,7 @@ public class InputExample : MonoBehaviour
 				for (int x = 0; x < Ammo.Length; x++) {
 						_prefabIDs [x] = hObjectPool.Instance.Add (Ammo [x]);
 				}
-
+						
 				// Add our Actions for linking with controls
 				hInput.Instance.AddAction ("Move", OnMove);
 				hInput.Instance.AddAction ("Turn", OnTurn);
