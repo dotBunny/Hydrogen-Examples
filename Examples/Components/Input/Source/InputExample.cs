@@ -127,11 +127,11 @@ public class InputExample : MonoBehaviour
 		/// <param name="inputEvent">Event Type</param>
 		/// <param name="inputValue">The value associated with the event.</param>
 		/// <param name="inputTime">The duration value associated with the event.</param>
-		void OnRotate (Hydrogen.Peripherals.InputEvent inputEvent, float inputValue, float inputTime)
+		void OnRotate (Hydrogen.Peripherals.InputEvent inputEvent, Vector2 inputValue, float inputTime)
 		{
 				// Mouse X Axes are relative movements only. 
 				// So we only turn the turret - never directly set the rotation.
-				TowerObject.transform.localRotation *= Quaternion.AngleAxis (inputValue * 180.0f * Time.deltaTime, Vector3.up);
+				TowerObject.transform.localRotation *= Quaternion.AngleAxis (inputValue.x * 180.0f * Time.deltaTime, Vector3.up);
 		}
 
 		/// <summary>
@@ -140,7 +140,7 @@ public class InputExample : MonoBehaviour
 		/// <param name="inputEvent">Event Type.</param>
 		/// <param name="inputValue">The value associated with the event.</param>
 		/// <param name="inputTime">The duration value associated with the event.</param>
-		void OnShoot (Hydrogen.Peripherals.InputEvent inputEvent, float inputValue, float inputTime)
+		void OnShoot (Hydrogen.Peripherals.InputEvent inputEvent, Vector2 inputValue, float inputTime)
 		{
 				// Only fire on release
 				if (inputEvent == Hydrogen.Peripherals.InputEvent.Released) {
@@ -161,12 +161,12 @@ public class InputExample : MonoBehaviour
 		/// <param name="inputEvent">Event Type.</param>
 		/// <param name="inputValue">The value associated with the event.</param>
 		/// <param name="inputTime">The duration value associated with the event.</param>
-		void OnMove (Hydrogen.Peripherals.InputEvent inputEvent, float inputValue, float inputTime)
+		void OnMove (Hydrogen.Peripherals.InputEvent inputEvent, Vector2 inputValue, float inputTime)
 		{
 				// Vertical Axes give it's state of absolute values of -1.0, 1.0 only.
 				// So this is used to move the box along it's looking direction (horizontal). This will handle forward 
 				// and backward movement in one go.
-				transform.transform.position += (transform.TransformDirection (Vector3.left) * inputValue * 10.0f) * Time.deltaTime;
+				transform.transform.position += (transform.TransformDirection (Vector3.left) * inputValue.y * 10.0f) * Time.deltaTime;
 		}
 
 		/// <summary>
@@ -175,11 +175,11 @@ public class InputExample : MonoBehaviour
 		/// <param name="inputEvent">Event Type.</param>
 		/// <param name="inputValue">The value associated with the event.</param>
 		/// <param name="inputTime">The duration value associated with the event.</param>
-		void OnTurn (Hydrogen.Peripherals.InputEvent inputEvent, float inputValue, float inputTime)
+		void OnTurn (Hydrogen.Peripherals.InputEvent inputEvent, Vector2 inputValue, float inputTime)
 		{
 				// Horizontal Axes give it's state of absolute values of -1.0, 1.0 only.
 				// We normalised this to a steering range, then use this to turn the tank.
-				transform.transform.localRotation *= Quaternion.AngleAxis (inputValue * 90.0f * Time.deltaTime, Vector3.up);
+				transform.transform.localRotation *= Quaternion.AngleAxis (inputValue.x * 90.0f * Time.deltaTime, Vector3.up);
 		}
 
 		/// <summary>

@@ -65,7 +65,7 @@ public class MailChimpExample : MonoBehaviour
 		/// <param name="hash">Call Hash.</param>
 		/// <param name="responseHeaders">Web Response Haders.</param>
 		/// <param name="responseText">Web Response Payload.</param>
-		public void MailChimpCallback (int hash, Hashtable responseHeaders, string responseText)
+		public void MailChimpCallback (int hash, System.Collections.Generic.Dictionary<string, string> responseHeaders, string responseText)
 		{
 				// Look we got something back, better say something in the console.
 				hDebug.Log ("Return from WebCall (" + hash + ") ... ");
